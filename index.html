@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Care Monthly Attendance System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            animation: colorChange 4s infinite alternate;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            animation: slideAndGlow 5s infinite alternate;
+            padding: 8px;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        /* Reduce logo size */
+        .logo {
+            height: 40px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-width: 180px;
+        }
+        
+        .summary-item h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .summary-item p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            margin: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            border: 2px solid #3498db;
+            padding: 12px 8px;
+            text-align: center;
+            position: relative;
+        }
+        
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th.fixed-column {
+            position: sticky;
+            left: 0;
+            z-index: 11;
+            background-color: #2c3e50;
+            border-right: 3px solid #1a252f;
+        }
+        
+        td.fixed-column {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background-color: #fff;
+            border-right: 3px solid #3498db;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) td.fixed-column {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover td.fixed-column {
+            background-color: #e3f2fd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .duty-D {
+            background-color: #d4edda;
+            color: #155724;
+            font-weight: bold;
+        }
+        
+        .duty-N {
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: bold;
+        }
+        
+        .duty-L {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            font-weight: bold;
+        }
+        
+        
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #3498db, 0 0 10px #3498db; }
+            to { box-shadow: 0 0 15px #3498db, 0 0 20px #3498db; }
+        }
+        
+        @keyframes colorChange {
+            0% { color: red; text-shadow: 0 0 5px rgba(255, 0, 0, 0.5); }
+            50% { color: green; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+            100% { color: purple; text-shadow: 0 0 5px rgba(128, 0, 128, 0.5); }
+        }
+        
+        @keyframes slideAndGlow {
+            0% { transform: translateX(-10px); color: blue; background-color: #E6E6FA; }
+            50% { transform: translateX(10px); color: #006400; background-color: #90EE90; }
+            100% { transform: translateX(0); color: #4B0082; background-color: #D8BFD8; }
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+       
+        .current-day {
+            background-color: #ffebee;
+            border: 2px solid #e53935;
+        }
+        
+        @media (max-width: 768px) {
+            th, td { padding: 8px 4px; font-size: 0.8rem; }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; }
+            .summary-item { width: 45%; padding: 10px; }
+        }
+        
+  .table-container::-webkit-scrollbar {
+    height: 12px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+}
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+                
+<header style="text-align: center; margin-top: 20px;">
+  <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+    <img src="images/A-care.png" alt="A-Care Logo" style="height: 60px;">
+    <span>A-Care Monthly Attendance: October</span>
+  </h1>
+
+  <h2 style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;">
+    <img src="images/sulekha.png" alt="Sulekha Logo" style="height: 50px;">
+    <span>Unit: Sulekha-RMZ</span>
+  </h2>
+</header>
+        <!-- Table remains same -->
+        <div class="table-container">
+            <!-- ... your table content ... -->
+            <table>
+                <thead>
+                    <tr>
+                        <th class="fixed-column">Sl.No</th>
+                        <th class="fixed-column">Name Of The Guards</th>
+                        
+                        <!-- Generate 30 days -->
+                        <th>01</th><th>02</th><th>03</th><th>04</th><th>05</th>
+                        <th>06</th><th>07</th>
+                        <th>08</th><th>09</th><th>10</th><th>11</th><th>12</th>
+                        <th>13</th><th>14</th>
+                        <th>15</th><th>16</th><th>17</th><th>18</th><th>19</th>
+                        <th>20</th><th>21</th>
+                        <th>22</th><th>23</th><th>24</th><th>25</th><th>26</th>
+                        <th>27</th><th>28</th>
+                        <th>29</th><th>30</th><th>31</th>
+                        <th class="fixed-column">Total Duties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fixed-column"><b>01</b></td>
+                        <td class="fixed-column">Karthikeyan</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-N">N</td>
+                        <td class="duty-N">N</td><td class="duty-N">N</td>
+                        <td class="duty-D"><b>D</b></td><td class="duty-N">N</td><td class="duty-N">N</td><td class="duty-D">D</td><td class="duty-D">D</td>
+                        <td class="duty-N">N</td><td class="duty-D">D</td>
+                        <td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-D"><b>D</b></td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-D">D</td>
+                        <td class="duty-D"><b>D</b></td><td class="duty-D">D</td><td class="duty-D">D</td>
+                        <td class="fixed-column">22</td>
+                    </tr>
+                    
+                     <tr>
+                        <td class="fixed-column"><b>02</b></td>
+                        <td class="fixed-column">Jeevanantham</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-L">L</td><td class="duty-N">N</td><td class="duty-D">D</td>
+                        <td class="duty-D">D</td><td class="duty-D">D</td>
+                        <td class="duty-N"><b>N</b></td><td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-N">N</td><td class="duty-N">N</td>
+                        <td class="duty-D">D</td><td class="duty-N">N</td>
+                        <td class="duty-N">N</td><td class="duty-N">N</td><td class="duty-N">N</td><td class="duty-N"><b>N</b></td><td class="duty-D">D</td>
+                        <td class="duty-D">D</td><td class="duty-D/N">D/N</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-N">N</td><td class="duty-N">N</td>
+                        <td class="fixed-column">23</td>
+                    </tr>
+                    <tr>
+                        <td class="fixed-column"><b>03</b></td>
+                        <td class="fixed-column">Ramkumar</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-N">N</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-D/N">D/N</td><td class="duty-L">L</td><td class="duty-D">D</td><td class="duty-D">D</td><td class="duty-D">D</td>
+                        <td class="duty-D">D</td><td class="duty-L">L</td>
+                        <td class="duty-N">N</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="fixed-column">08</td>
+                    </tr>
+                   
+                    <tr>
+                        <td class="fixed-column"><b>04</b></td>
+                        <td class="fixed-column">Harsh Dass</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L"><b>L</b></td><td class="duty-N">N</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-N">N</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="fixed-column">02</td>
+                    </tr>
+                     <tr>
+                        <td class="fixed-column"><b>05</b></td>
+                        <td class="fixed-column">Sasikumar</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L"><b>L</b></td><td class="duty-L">L</td>
+                        <td class="duty-N">N</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-D">D</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-N">N</td>
+                        <td class="duty-L">L</td><td class="duty-N">N</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="fixed-column">04</td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="fixed-column"><b>06</b></td>
+                        <td class="fixed-column">Shankar</td>
+                        
+                        <!-- 30 days of data -->
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L">L</td><td class="duty-L"><b>L</b></td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="duty-L">L</td><td class="duty-N">N</td><td class="duty-L">L</td><td class="duty-N">N</td><td class="duty-L">L</td>
+                        <td class="duty-N">N</td><td class="duty-L">L</td>
+                        <td class="duty-L"><b>L</b></td><td class="duty-L">L</td><td class="duty-L">L</td>
+                        <td class="fixed-column">03</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+         <div class="summary">
+            <div class="summary-item">
+                <h3>Total Guards</h3>
+                <p>06</p>
+            </div>
+            <div class="summary-item">
+                <h3>Total Duties</h3>
+                <p>62</p>
+            </div>
+        </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const currentDay = today.getDate();
+    const cells = document.querySelectorAll('th, td');
+    cells.forEach(cell => cell.classList.remove('current-day'));
+    const dayHeaders = document.querySelectorAll('th');
+    dayHeaders.forEach(header => {
+        if (header.textContent == currentDay) {
+            header.classList.add('current-day');
+            const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+            const dataRows = document.querySelectorAll('tr');
+            dataRows.forEach(row => {
+                const cell = row.children[columnIndex];
+                if (cell && !cell.classList.contains('fixed-column')) {
+                    cell.classList.add('current-day');
+                }
+            });
+        }
+    });
+}); // ✅ properly closes DOMContentLoaded function
+</script>
+</body>
+</html>
